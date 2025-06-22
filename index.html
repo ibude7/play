@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramount+ Jeopardy Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Setup Screen -->
+        <div id="setupScreen" class="setup-screen">
+            <div class="setup-content">
+                <h1 class="jeopardy-logo">JEOPARDY!</h1>
+                <p class="setup-subtitle">Enter player names to begin</p>
+                
+                <div class="players-setup">
+                    <div class="form-group">
+                        <label class="form-label">Number of Players (2-24):</label>
+                        <input type="number" id="playerCount" class="form-control" min="2" max="24" value="2">
+                    </div>
+                    `
+                    <div id="playerNames" class="player-names">
+                        <div class="form-group">
+                            <label class="form-label">Player 1:</label>
+                            <input type="text" class="form-control player-input" placeholder="Enter player name" value="Player 1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Player 2:</label>
+                            <input type="text" class="form-control player-input" placeholder="Enter player name" value="Player 2">
+                        </div>
+                    </div>
+                    
+                    <div class="setup-controls">
+                        <button id="startGameBtn" class="btn btn--primary btn--lg">Start Jeopardy Game</button>
+                        <button id="muteBtn" class="btn btn--secondary">🔊 Audio</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="game-screen" style="display: none;">
+            <!-- Header -->
+            <header class="game-header">
+                <h1 class="jeopardy-logo">JEOPARDY!</h1>
+                <div class="game-controls">
+                    <div class="current-player">
+                        <span class="player-label">Current Player:</span>
+                        <span id="currentPlayer" class="player-name">Player 1</span>
+                    </div>
+                    <button id="resetBtn" class="btn btn--outline">Reset Game</button>
+                </div>
+                <div class="score-display">
+                    <div class="player-scores" id="playerScores">
+                        <!-- Player scores will be populated by JavaScript -->
+                    </div>
+                </div>
+            </header>
+
+            <!-- Game Board -->
+            <div id="gameBoard" class="game-board">
+                <div class="categories-row">
+                    <div class="category-cell">CBS</div>
+                    <div class="category-cell">SHOWTIME</div>
+                    <div class="category-cell">PARAMOUNT+<br>ORIGINAL</div>
+                    <div class="category-cell">SPORT</div>
+                    <div class="category-cell">BRANDS</div>
+                    <div class="category-cell">CLASSIC<br>MOVIES</div>
+                </div>
+                <div class="values-grid" id="valuesGrid">
+                    <!-- Minute values will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Question Modal -->
+            <div id="questionModal" class="modal">
+                <div class="modal-content">
+                    <div class="question-header">
+                        <h3 id="questionCategory" class="question-category"></h3>
+                        <div class="question-value" id="questionValue"></div>
+                        <div class="timer-container">
+                            <div id="timer" class="timer">30</div>
+                            <div class="timer-bar">
+                                <div id="timerFill" class="timer-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="questionText" class="question-text"></div>
+                    <div class="question-controls">
+                        <button id="showAnswerBtn" class="btn btn--primary">Show Answer</button>
+                        <div id="judgingButtons" class="judging-buttons" style="display: none;">
+                            <button id="correctBtn" class="btn btn--success">Correct</button>
+                            <button id="incorrectBtn" class="btn btn--error">Incorrect</button>
+                        </div>
+                    </div>
+                    <div id="answerText" class="answer-text" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Final Jeopardy Modal -->
+            <div id="finalJeopardyModal" class="modal">
+                <div class="modal-content final-jeopardy">
+                    <h2 class="final-jeopardy-title">FINAL JEOPARDY!</h2>
+                    <div id="finalCategory" class="final-category"></div>
+                    <div id="finalQuestion" class="final-question"></div>
+                    <div class="final-controls">
+                        <button id="showFinalAnswerBtn" class="btn btn--primary">Show Answer</button>
+                        <button id="endGameBtn" class="btn btn--secondary" style="display: none;">End Game</button>
+                    </div>
+                    <div id="finalAnswer" class="final-answer" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Break Time Modal -->
+            <div id="breakModal" class="modal">
+                <div class="modal-content break-modal">
+                    <h2 class="break-title">🎉 Break Time Earned! 🎉</h2>
+                    <div class="break-timer">
+                        <div id="breakCountdown" class="break-countdown"></div>
+                        <div class="break-message">Enjoy your well-deserved rest!</div>
+                    </div>
+                    <button id="skipBreakBtn" class="btn btn--outline">Skip Break</button>
+                </div>
+            </div>
+
+            <!-- Game Over Modal -->
+            <div id="gameOverModal" class="modal">
+                <div class="modal-content game-over">
+                    <h2 class="game-over-title">🎊 Game Complete! 🎊</h2>
+                    <div class="final-stats" id="finalStats">
+                        <!-- Final player scores will be populated by JavaScript -->
+                    </div>
+                    <button id="playAgainBtn" class="btn btn--primary">Play Again</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confetti Canvas -->
+        <canvas id="confettiCanvas"></canvas>
+
+        <!-- Audio Elements -->
+        <audio id="clickSound" preload="auto">
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+Dt" type="audio/wav">
+        </audio>
+        
+        <audio id="revealSound" preload="auto">
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+Dt" type="audio/wav">
+        </audio>
+
+        <audio id="correctSound" preload="auto">
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+Dt" type="audio/wav">
+        </audio>
+
+        <audio id="wrongSound" preload="auto">
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+Dt" type="audio/wav">
+        </audio>
+
+        <audio id="finalJeopardyMusic" preload="auto" loop>
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+Dt" type="audio/wav">
+        </audio>
+
+        <audio id="backgroundMusic" preload="auto" loop>
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+Dt" type="audio/wav">
+        </audio>
+
+        <audio id="introMusic" preload="auto">
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+Dt" type="audio/wav">
+        </audio>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
